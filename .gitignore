@@ -1,0 +1,11 @@
+data/
+.env
+.envrc
+
+.vscode/
+
+__pycache__
+.direnv/
+build/
+*.egg-info/
+dist/
