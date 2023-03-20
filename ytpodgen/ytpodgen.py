@@ -11,7 +11,7 @@ import requests
 
 from ytpodgen import downloader, feedgenerator, uploader
 
-SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL") #
+SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
 
 def print_version(ctx, param, value):
     if not value or ctx.resilient_parsing:

@@ -2,8 +2,10 @@
 name = "ytpodgen"
 version = "0.2.1"
 description = "turns YouTube live streams into podcasts"
+license = "MIT"
 authors = ["harupong <harupong@gmail.com>"]
 readme = "README.md"
+repository = "https://github.com/harupong/ytpodgen"
 
 [tool.poetry.dependencies]
 python = "^3.10"
