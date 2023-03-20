@@ -1,5 +1,6 @@
 import os
 from importlib.metadata import version
+from pathlib import Path
 from textwrap import dedent
 
 
@@ -8,11 +9,9 @@ from loguru import logger
 import requests
 
 
-from . import downloader
-from . import feedgenerator
-from . import uploader
+from ytpodgen import downloader, feedgenerator, uploader
 
-SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
+SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL") #
 
 def print_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
@@ -34,57 +33,72 @@ def send_slack_notification(message):
 )
 @click.option(
     '--liveurl',
-    help='watch for and download the specified YouTube Live URL'
+    help='Watch for and download the specified YouTube Live URL.'
 )
 @click.option(
     '--upload-r2',
     is_flag=True,
-    help='if specified, upload mp3s/RSS to Cloudflare R2'
+    help='If specified, upload mp3s/RSS to Cloudflare R2.'
 )
-@click.option('--debug', is_flag=True, help='run yt-dlp in debug mode')
+@click.option(
+    '--output',
+    help='Output directory(default: current directory)'
+)
 @click.option(
     '--version',
     is_flag=True,
     callback=print_version,
     expose_value=False,
-    is_eager=True
+    is_eager=True,
+    help='Show version and exit.'
 )
-def cli(title, hostname, liveurl, upload_r2, debug):
-    logger.add(
-        f"{title}.log",
-        level="INFO"
-    )
-    if SLACK_WEBHOOK_URL:
-        logger.add(
-            send_slack_notification,
-            level="SUCCESS"
-        )
+
+def cli(title, hostname, liveurl, upload_r2, output):
+    change_work_dir(output, title)
+    create_logger(title)
 
     try:
         while True:
-            if liveurl:
-                logger.info("Running yt-dlp...")
-                downloader.download(title, liveurl)
-
-            logger.info("Generating feeds...")
-            feedgenerator.generate_rss(title, hostname)
-
-            if upload_r2:
-                logger.info("Uploading files...")
-                uploader.upload_to_r2(title)
-                logger.success(
-                    dedent(
-                        f"""
-                        Upload completed.
-                        Podcast feed url: https://{hostname}/{title}/index.rss
-                        """
-                    ).strip("\n")
-                )
-            
+            run(title, hostname, liveurl, upload_r2)
             if liveurl is None:
                 break
     except Exception as e:
         logger.error(f"ytpodgen failed with following error messages: {e}")
+
+def create_logger(title):
+    logger.add(f"{title}.log", level="INFO")
+    if SLACK_WEBHOOK_URL:
+        logger.add(send_slack_notification, level="SUCCESS")
+
+def change_work_dir(output, title):
+    try:
+        work_dir = Path.cwd()
+        if output:
+            work_dir = Path(output).absolute()
+        os.chdir(work_dir)
+    except FileNotFoundError:
+        create_logger(title)
+        logger.error(f"Invalid argument {output} for --output option.")
+        exit()
+
+def run(title, hostname, liveurl, upload_r2):
+    if liveurl:
+        logger.info("Running yt-dlp...")
+        downloader.download(title, liveurl)
+
+    logger.info("Generating feeds...")
+    feedgenerator.generate_rss(title, hostname)
+
+    if upload_r2:
+        logger.info("Uploading files...")
+        uploader.upload_to_r2(title)
+        logger.success(dedent(
+            f"""
+            Upload completed.  Podcast feed url:
+            https://{hostname}/{title}/index.rss
+            """
+            ).strip("\n")
+        )
 
 if __name__ == '__main__':
     cli()
