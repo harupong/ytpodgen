@@ -1,4 +1,4 @@
-import yt_dlp
+from yt_dlp import YoutubeDL
 
 
 from loguru import logger
@@ -12,8 +12,8 @@ def download(title, liveurl):
     # See help(yt_dlp.YoutubeDL) for a list of available options and public functions
     # https://github.com/yt-dlp/yt-dlp/blob/216bcb66d7dce0762767d751dad10650cb57da9d/yt_dlp/YoutubeDL.py#L184
     ydl_opts = {
-        'format': 'bestaudio',
-        'wait_for_video': (600, 3600), #(min_sec, max_sec) 
+        'format': 'bestaudio/best', # best audio-only format if available, if not, fall back to best format that contains both video and audio
+        'wait_for_video': (600, 1800), 
         'outtmpl': f'{title}_%(epoch>%Y%m%d%H%M%S)s_%(id)s',
         'live_from_start': live_from_start,
         'postprocessors': [{  # Extract audio using ffmpeg
@@ -26,12 +26,12 @@ def download(title, liveurl):
         ],
     }
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+    with YoutubeDL(ydl_opts) as ydl:
         error_code = ydl.download(liveurl)
 
 def _is_live(liveurl):
     ydl_opts = {}
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+    with YoutubeDL(ydl_opts) as ydl:
         try:
             info = ydl.extract_info(liveurl, download=False)
             live_status = info['live_status'].rstrip('\n')
