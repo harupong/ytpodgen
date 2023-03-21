@@ -13,7 +13,7 @@ def download(title, liveurl):
     # https://github.com/yt-dlp/yt-dlp/blob/216bcb66d7dce0762767d751dad10650cb57da9d/yt_dlp/YoutubeDL.py#L184
     ydl_opts = {
         'format': 'bestaudio/best', # best audio-only format if available, if not, fall back to best format that contains both video and audio
-        'wait_for_video': (600, 1800), 
+        'wait_for_video': (60, 60), 
         'outtmpl': f'{title}_%(epoch>%Y%m%d%H%M%S)s_%(id)s',
         'live_from_start': live_from_start,
         'postprocessors': [{  # Extract audio using ffmpeg
