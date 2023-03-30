@@ -9,7 +9,10 @@ from loguru import logger
 import requests
 
 
-from ytpodgen import downloader, feedgenerator, uploader
+from ytpodgen.downloader import Downloader
+from ytpodgen.feedgenerator import FeedGenerator
+from ytpodgen.uploader import Uploader
+
 
 SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
 
@@ -38,7 +41,9 @@ def send_slack_notification(message):
     "--liveurl", help="Watch for and download the specified YouTube Live URL."
 )
 @click.option(
-    "--upload-r2", is_flag=True, help="If specified, upload mp3s/RSS to Cloudflare R2."
+    "--upload-r2",
+    is_flag=True,
+    help="If specified, upload mp3s/RSS to Cloudflare R2."
 )
 @click.option("--output", help="Output directory(default: current directory)")
 @click.option(
@@ -83,13 +88,16 @@ def change_work_dir(output, title):
 def run(title, hostname, liveurl, upload_r2):
     if liveurl:
         logger.info("Running yt-dlp...")
+        downloader = Downloader()
         downloader.download(title, liveurl)
 
     logger.info("Generating feeds...")
+    feedgenerator = FeedGenerator()
     feedgenerator.generate_rss(title, hostname)
 
     if upload_r2:
         logger.info("Uploading files...")
+        uploader = Uploader()
         uploader.upload_to_r2(title)
         logger.success(
             dedent(
