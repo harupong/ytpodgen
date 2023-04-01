@@ -64,13 +64,4 @@ Because:
 4. added a trigger(custom domain route) to the basic auth worker. [docs](https://developers.cloudflare.com/workers/platform/triggers/routes/)
 
 ## TODO/IDEAS
-- [ ] replace Click package with argparse (argparse is lightweight and suits ytpodgen well) ref: [1](https://stackoverflow.com/questions/10974491/how-to-combine-interactive-prompting-with-argparse-in-python)
-- [ ] simplify basic auth on R2 bucket e.g. [1](https://zenn.dev/yusukebe/articles/54649c85beef1b) [2](https://zenn.dev/morinokami/articles/url-shortener-with-hono-on-cloudflare-workers)
-- [ ] log when download has started
-- [x] add an option to specify output path
-- [x] use `boto3` for uploading files in order to remove `rclone`
-- [x] generate rss feed with python code in order to remove `dropcaster`
-- [x] embed `yt-dlp` into ytpodgen, instead of calling it via docker
-- [x] use `--live-from-start` option for yt-dlp if the stream has already started
-- [x] package this app using `poetry` so that I can install this using `pip`
-- [x] introduce [Click](https://click.palletsprojects.com/en/8.0.x/) for this project
+moved to [GitHub issues](https://github.com/harupong/ytpodgen/issues/)
