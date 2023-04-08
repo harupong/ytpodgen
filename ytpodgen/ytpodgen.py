@@ -1,10 +1,10 @@
+import argparse
 import os
 from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
 
 
-import click
 from loguru import logger
 import requests
 
@@ -17,44 +17,60 @@ from ytpodgen.uploader import Uploader
 SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
 
 
-def print_version(ctx, param, value):
-    if not value or ctx.resilient_parsing:
-        return
-    ytpodgen_version = version("ytpodgen")
-    click.echo(ytpodgen_version)
-    ctx.exit()
-
-
 def send_slack_notification(message):
     data = {"text": message}
     requests.post(SLACK_WEBHOOK_URL, json=data)
 
 
-@click.command()
-@click.option("--title", prompt="enter title", help="title for the podcast")
-@click.option(
-    "--hostname",
-    prompt="enter hostname",
-    help="hostname(custom or r2.dev) to serve files",
-)
-@click.option(
-    "--liveurl", help="Watch for and download the specified YouTube Live URL."
-)
-@click.option(
-    "--upload-r2",
-    is_flag=True,
-    help="If specified, upload mp3s/RSS to Cloudflare R2."
-)
-@click.option("--output", help="Output directory(default: current directory)")
-@click.option(
-    "--version",
-    is_flag=True,
-    callback=print_version,
-    expose_value=False,
-    is_eager=True,
-    help="Show version and exit.",
-)
-def cli(title, hostname, liveurl, upload_r2, output):
+def get_version():
+    return version("ytpodgen")
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Podcast generator")
+    parser.add_argument(
+        "--title",
+        required=True,
+        help="title for the podcast"
+    )
+    parser.add_argument(
+        "--hostname",
+        required=True,
+        help="hostname(custom or r2.dev) to serve files"
+    )
+    parser.add_argument(
+        "--liveurl",
+        help="Watch for and download the specified YouTube Live URL."
+    )
+    parser.add_argument(
+        "--upload-r2",
+        action="store_true",
+        help="If specified, upload mp3s/RSS to Cloudflare R2.",
+    )
+    parser.add_argument(
+        "--output",
+        default=".",
+        help="Output directory(default: current directory)"
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=get_version(),
+        help="Show version and exit.",
+    )
+
+    args = parser.parse_args()
+    return args
+
+
+def main():
+    args = parse_arguments()
+    title = args.title
+    hostname = args.hostname
+    liveurl = args.liveurl
+    upload_r2 = args.upload_r2
+    output = args.output
+
     change_work_dir(output, title)
     create_logger(title)
 
@@ -110,4 +126,4 @@ def run(title, hostname, liveurl, upload_r2):
 
 
 if __name__ == "__main__":
-    cli()
+    main()

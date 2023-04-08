@@ -25,4 +25,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-ytpodgen = "ytpodgen.ytpodgen:cli"
+ytpodgen = "ytpodgen.ytpodgen:main"
