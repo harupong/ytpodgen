@@ -8,7 +8,8 @@ class FeedGenerator:
     def __init__(self):
         pass
 
-    def generate_rss(self, title, hostname):
+    @staticmethod
+    def generate_rss(title, hostname):
         podcast = Podcast(
             name=title,
             website=f"https://{hostname}/{title}/",
@@ -17,10 +18,11 @@ class FeedGenerator:
             withhold_from_itunes=True,
         )
 
-        self._add_episodes(title, hostname, podcast)
+        FeedGenerator._add_episodes(title, hostname, podcast)
         podcast.rss_file("index.rss")
 
-    def _add_episodes(self, title, hostname, podcast):
+    @staticmethod
+    def _add_episodes(title, hostname, podcast):
         files = Path(".").glob("*.mp3")
         for file in files:
             media = Media(

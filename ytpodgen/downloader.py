@@ -5,8 +5,9 @@ class Downloader:
     def __init__(self):
         pass
 
-    def download(self, title, liveurl):
-        live_from_start = True if self._is_live(liveurl) else False
+    @staticmethod
+    def download(title, liveurl):
+        live_from_start = True if Downloader._is_live(liveurl) else False
 
         # See help(yt_dlp.YoutubeDL) for a list of available options
         # and public functions
@@ -34,7 +35,8 @@ class Downloader:
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download(liveurl)
 
-    def _is_live(self, liveurl):
+    @staticmethod
+    def _is_live(liveurl):
         ydl_opts = {}
         with YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(liveurl, download=False)

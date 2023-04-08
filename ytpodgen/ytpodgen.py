@@ -104,17 +104,14 @@ def change_work_dir(output, title):
 def run(title, hostname, liveurl, upload_r2):
     if liveurl:
         logger.info("Running yt-dlp...")
-        downloader = Downloader()
-        downloader.download(title, liveurl)
+        Downloader.download(title, liveurl)
 
     logger.info("Generating feeds...")
-    feedgenerator = FeedGenerator()
-    feedgenerator.generate_rss(title, hostname)
+    FeedGenerator.generate_rss(title, hostname)
 
     if upload_r2:
         logger.info("Uploading files...")
-        uploader = Uploader()
-        uploader.upload_to_r2(title)
+        Uploader.upload_to_r2(title)
         logger.success(
             dedent(
                 f"""
