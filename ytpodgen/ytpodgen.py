@@ -65,19 +65,14 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
-    title = args.title
-    hostname = args.hostname
-    liveurl = args.liveurl
-    upload_r2 = args.upload_r2
-    output = args.output
 
-    change_work_dir(output, title)
-    create_logger(title)
+    change_work_dir(args.output, args.title)
+    create_logger(args.title)
 
     try:
         while True:
-            run(title, hostname, liveurl, upload_r2)
-            if liveurl is None:
+            run(args)
+            if args.liveurl is None:
                 break
     except Exception as e:
         logger.error(f"ytpodgen failed with following error messages: {e}")
@@ -101,22 +96,22 @@ def change_work_dir(output, title):
         exit()
 
 
-def run(title, hostname, liveurl, upload_r2):
-    if liveurl:
+def run(args):
+    if args.liveurl:
         logger.info("Running yt-dlp...")
-        Downloader.download(title, liveurl)
+        Downloader.download(args.title, args.liveurl)
 
     logger.info("Generating feeds...")
-    FeedGenerator.generate_rss(title, hostname)
+    FeedGenerator.generate_rss(args.title, args.hostname)
 
-    if upload_r2:
+    if args.upload_r2:
         logger.info("Uploading files...")
-        Uploader.upload_to_r2(title)
+        Uploader.upload_to_r2(args.title)
         logger.success(
             dedent(
                 f"""
             Upload completed.  Podcast feed url:
-            https://{hostname}/{title}/index.rss
+            https://{args.hostname}/{args.title}/index.rss
             """
             ).strip("\n")
         )

@@ -1,3 +1,4 @@
+import datetime
 from pathlib import Path
 
 
@@ -35,5 +36,9 @@ class FeedGenerator:
                 Episode(
                     title=file.name,  # filename
                     media=media,
+                    publication_date=datetime.datetime.fromtimestamp(
+                        file.stat().st_ctime,
+                        datetime.timezone.utc,
+                    ),
                 )
             )
