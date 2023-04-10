@@ -25,7 +25,7 @@ class FeedGenerator:
     @staticmethod
     def _add_episodes(title, hostname, podcast):
         files = Path(".").glob("*.mp3")
-        for file in files:
+        for file in sorted(files, reverse=True):
             media = Media(
                 url=f"https://{hostname}/{title}/{file.name}",
                 size=file.stat().st_size,
