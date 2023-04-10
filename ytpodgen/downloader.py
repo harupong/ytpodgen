@@ -1,4 +1,4 @@
-from yt_dlp import YoutubeDL
+import yt_dlp
 
 
 class Downloader:
@@ -32,13 +32,16 @@ class Downloader:
             ],
         }
 
-        with YoutubeDL(ydl_opts) as ydl:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download(liveurl)
 
     @staticmethod
     def _is_live(liveurl):
         ydl_opts = {}
-        with YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(liveurl, download=False)
-            live_status = info["live_status"].rstrip("\n")
-            return True if live_status == "is_live" else False
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            try:
+                info = ydl.extract_info(liveurl, download=False)
+                live_status = info["live_status"].rstrip("\n")
+                return True if live_status == "is_live" else False
+            except yt_dlp.utils.DownloadError:
+                return False
