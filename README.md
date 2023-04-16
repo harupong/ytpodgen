@@ -51,6 +51,17 @@ ytpodgen --title ${TITLE} --hostname ${HOSTNAME}
 
 This generates `index.rss` file under current directory and exits.
 
+## How to release
+Executing the commands below, and the GitHub Actions publishes new package to PyPI.
+
+```bash
+poetry version <patch/minor/major>
+git add pyproject.toml && git commit -m $(poetry version -s)
+git push origin main
+gh release create --generate-notes "v$(poetry version -s)"
+git fetch --tags origin
+```
+
 ## Why only Cloudflare R2, and not other S3-compatible cloud storage?
 Because:
 
