@@ -7,8 +7,8 @@ class Downloader:
 
     @staticmethod
     def download(title, liveurl):
-        live_from_start = True if Downloader._is_live(liveurl) else False
-
+        live_from_start = True
+        
         # See help(yt_dlp.YoutubeDL) for a list of available options
         # and public functions
         # https://github.com/yt-dlp/yt-dlp/blob/216bcb66d7dce0762767d751dad10650cb57da9d/yt_dlp/YoutubeDL.py#L184
@@ -34,14 +34,3 @@ class Downloader:
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download(liveurl)
-
-    @staticmethod
-    def _is_live(liveurl):
-        ydl_opts = {}
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            try:
-                info = ydl.extract_info(liveurl, download=False)
-                live_status = info["live_status"].rstrip("\n")
-                return True if live_status == "is_live" else False
-            except yt_dlp.utils.DownloadError:
-                return False
