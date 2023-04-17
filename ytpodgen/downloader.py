@@ -16,7 +16,7 @@ class Downloader:
             # best audio-only format if available,
             # and if not, fall back to best format that contains both video and audio
             "format": "bestaudio/best",
-            "wait_for_video": (60, 60),
+            "wait_for_video": (60, 600),
             "outtmpl": f"{title}_%(epoch>%Y%m%d%H%M%S)s_%(id)s",
             "live_from_start": live_from_start,
             "postprocessors": [
