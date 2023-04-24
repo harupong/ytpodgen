@@ -108,9 +108,7 @@ def change_work_dir(output, title):
 
 
 def run(args):
-    path = args.title
-    if args.private:
-        path = hashlib.sha256(args.title.encode("utf-8")).hexdigest()
+    path = generate_hashed_path(args.title) if args.private else args.title
 
     if args.liveurl:
         logger.info("Running yt-dlp...")
@@ -130,6 +128,12 @@ def run(args):
             """
             ).strip("\n")
         )
+
+
+def generate_hashed_path(title):
+    hashed_title = hashlib.sha256(title.encode("utf-8")).hexdigest()
+    path = f"{title}_{hashed_title}"
+    return path
 
 
 if __name__ == "__main__":
