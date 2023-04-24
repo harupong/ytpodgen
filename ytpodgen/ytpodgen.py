@@ -125,8 +125,8 @@ def run(args):
         logger.success(
             dedent(
                 f"""
-            Upload completed.  Podcast feed url:
-            https://{args.hostname}/{path}/index.rss
+            {args.title} Uploaded.
+            Podcast feed url: https://{args.hostname}/{path}/index.rss
             """
             ).strip("\n")
         )
