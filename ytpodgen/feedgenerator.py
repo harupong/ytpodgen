@@ -10,24 +10,24 @@ class FeedGenerator:
         pass
 
     @staticmethod
-    def generate_rss(title, hostname):
+    def generate_rss(title, hostname, path):
         podcast = Podcast(
             name=title,
-            website=f"https://{hostname}/{title}/",
+            website=f"https://{hostname}/{path}/",
             description=title,
             explicit=False,
             withhold_from_itunes=True,
         )
 
-        FeedGenerator._add_episodes(title, hostname, podcast)
+        FeedGenerator._add_episodes(hostname, podcast, path)
         podcast.rss_file("index.rss")
 
     @staticmethod
-    def _add_episodes(title, hostname, podcast):
+    def _add_episodes(hostname, podcast, path):
         files = Path(".").glob("*.mp3")
         for file in sorted(files, reverse=True):
             media = Media(
-                url=f"https://{hostname}/{title}/{file.name}",
+                url=f"https://{hostname}/{path}/{file.name}",
                 size=file.stat().st_size,
             )
             media.populate_duration_from(file)

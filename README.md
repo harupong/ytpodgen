@@ -70,7 +70,11 @@ Because:
 - It offers free tier for up to 10GB of storage space per month
 - With Cloudflare Worker, basic auth can be applied to the uploaded files that are made public
 
-## how I configured basic auth on Cloudflare R2 using Cloudflare Workers
+## "Private Podcasts" private url or basic auth?
+There are cases where you want to publish a podcast, but you don't want to make it public. In such cases, you can use two methods to make it private, "private url" or "basic auth".
+
+"basic auth" is more secure, but it requires additional setup. "private url" is easier to setup, but it is not as secure as "basic auth". You can create private url podcast by passing `--private-url` argument to `ytpodgen`.
+### how I configured basic auth on Cloudflare R2 using Cloudflare Workers
 1. connected a custom domain to my R2 bucket, to make the bucket public. [docs](https://developers.cloudflare.com/r2/buckets/public-buckets/)
 2. configured a basic auth worker by following steps described [here](https://qiita.com/AnaKutsu/items/1c8bd0eb938edd3c0e0a).
 3. replaced the plaintext declaration of password with worker env var. [docs](https://developers.cloudflare.com/workers/platform/environment-variables/#environment-variables-via-the-dashboard)

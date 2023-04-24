@@ -13,7 +13,7 @@ class Uploader:
         pass
 
     @staticmethod
-    def upload_to_r2(title, bucket="podcast"):
+    def upload_to_r2(path, bucket="podcast"):
         s3 = boto3.resource(
             "s3",
             endpoint_url=Uploader.get_env_var("R2_ENDPOINT_URL"),
@@ -24,7 +24,7 @@ class Uploader:
         filetypes = r"(.+\.mp3|index.rss)"  # regex pattern in string
         files = Uploader.collect_files(filetypes)
         podcastbucket = Uploader.get_or_create_bucket(bucket, s3)
-        Uploader.upload(title, files, podcastbucket)
+        Uploader.upload(path, files, podcastbucket)
 
     @staticmethod
     def get_env_var(name):
@@ -49,10 +49,10 @@ class Uploader:
         return files
 
     @staticmethod
-    def upload(title, upload_files, podcastbucket):
+    def upload(path, upload_files, podcastbucket):
         for file in upload_files:
             try:
-                podcastbucket.upload_file(file, f"{title}/{file}")
+                podcastbucket.upload_file(file, f"{path}/{file}")
             except ClientError as e:
                 logger.error(e)
 

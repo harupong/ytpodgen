@@ -1,5 +1,6 @@
 import argparse
 import os
+import hashlib
 from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
@@ -53,6 +54,16 @@ def parse_arguments():
         help="Output directory(default: current directory)"
     )
     parser.add_argument(
+        "--bucket",
+        default="podcast",
+        help="R2 Bucket name to upload files(default: podcast)"
+    )
+    parser.add_argument(
+        "--private",
+        action="store_true",
+        help="If specified, make the podcast private by generating hashed url."
+    )
+    parser.add_argument(
         "--version",
         action="version",
         version=get_version(),
@@ -97,21 +108,25 @@ def change_work_dir(output, title):
 
 
 def run(args):
+    path = args.title
+    if args.private:
+        path = hashlib.sha256(args.title.encode("utf-8")).hexdigest()
+
     if args.liveurl:
         logger.info("Running yt-dlp...")
         Downloader.download(args.title, args.liveurl)
 
     logger.info("Generating feeds...")
-    FeedGenerator.generate_rss(args.title, args.hostname)
+    FeedGenerator.generate_rss(args.title, args.hostname, path)
 
     if args.upload_r2:
         logger.info("Uploading files...")
-        Uploader.upload_to_r2(args.title)
+        Uploader.upload_to_r2(path, args.bucket)
         logger.success(
             dedent(
                 f"""
             Upload completed.  Podcast feed url:
-            https://{args.hostname}/{args.title}/index.rss
+            https://{args.hostname}/{path}/index.rss
             """
             ).strip("\n")
         )
