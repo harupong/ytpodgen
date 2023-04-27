@@ -1,10 +1,12 @@
 # ytpodgen
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-command line tool to turn YouTube live streams into podcasts
+Command line tool to turn YouTube live streams into podcasts. It watches out for new YouTube live streams, and once on the air, records the livestream, converts it to audio file, generates podcast RSS, and uploads them to Cloudflare R2.
 
 ## prerequisite
 - python3 and pip
+
+Tested only on Mac and Linux.
 
 ## first time setup
 ```
@@ -21,37 +23,50 @@ If you want to upload files to Cloudflare R2 as well, don't forget to set three 
 
 For now, R2 bucket name must be `podcast`.
 
+## usage
+```
+usage: ytpodgen [-h] --title TITLE --hostname HOSTNAME [--liveurl LIVEURL] [--upload-r2] [--output OUTPUT] [--bucket BUCKET] [--private] [--version]
+
+Podcast generator
+
+options:
+  -h, --help           show this help message and exit
+  --title TITLE        title for the podcast
+  --hostname HOSTNAME  hostname(custom or r2.dev) to serve files
+  --liveurl LIVEURL    Watch for and download the specified YouTube Live URL.
+  --upload-r2          If specified, upload mp3s/RSS to Cloudflare R2.
+  --output OUTPUT      Output directory(default: current directory)
+  --bucket BUCKET      R2 Bucket name to upload files(default: podcast)
+  --private            If specified, make the podcast private by generating hashed url.
+  --version            Show version and exit.
+```
+
 ## examples
 ### wait for new livestream, and once on the air, record it and generate podcast RSS in background
 ```
-TITLE=<title> ; #title for your podcast
-LIVEURL=<liveurl> ; #YouTube live URL that ends with "/live"
-HOSTNAME=<hostname> ; #hostname to serve files from
-screen -dmS ${TITLE} ytpodgen --liveurl ${LIVEURL} --title ${TITLE} --hostname ${HOSTNAME}
+screen -dmS <TITLE> ytpodgen --liveurl <LIVEURL> --title <TITLE> --hostname <HOSTNAME>
 ```
 
 When completed, `ytpodgen` will wait for another livestream. Since all the waiting might take a while, I prefer running this in background using `screen`.
 
-### Why not upload them as well!?
-You can pass `--upload-r2` argument to enable file uploadig to Cloudflare R2. By enabling it, mp3s/RSS are uploaded to Cloudflare R2.
+### a few options you might wanna take a look at
+#### private
+When you want to make a podcast private, using basic auth to restrict access is the best way to go. However, it requires additional setup, and some podcast apps don't support basic auth.
 
-For example, by running the commands below , you create a screen session that waits for YouTube livestream on the given URL and saves the data under current directory if there is a livestream.
+By passing this option, you can generate hashed url for the podcast. It is far less secure than basic auth, but it is easier to setup, and it works with most podcast apps.
 
-```
-TITLE=<title> ; #title for your podcast
-LIVEURL=<liveurl> ; #YouTube live URL that ends with "/live"
-HOSTNAME=<hostname> ; #hostname to serve files from
-screen -dmS ${TITLE} ytpodgen --upload-r2 --liveurl ${LIVEURL} --title ${TITLE} --hostname ${HOSTNAME}
-```
+I'm using this option to sync audiobook files to the podcast app on my Garmin smartwatch. 
+#### bucket BUCKET
+By default, `ytpodgen` uploads files to `podcast` bucket. If you want to upload files to a different bucket, you can specify it with this option.
+
+I'm using this option to switch between a bucket that is password protected by basic auth, and a bucket that is not.  Be careful what to pass to the `--hostname` option when you use this option, as the hostname must match the bucket name.
 
 ### I just want to generate RSS from mp3 files, no download/upload needed
 ```
-TITLE=<title> ; #title for your podcast
-HOSTNAME=<hostname> ; #hostname to serve files from
-ytpodgen --title ${TITLE} --hostname ${HOSTNAME}
+ytpodgen --title <TITLE> --hostname <HOSTNAME>
 ```
 
-This generates `index.rss` file under current directory and exits.
+This generates `index.rss` file from the mp3 files in current directory and exits.
 
 ## How to release
 Executing the commands below, and the GitHub Actions publishes new package to PyPI.
@@ -70,11 +85,7 @@ Because:
 - It offers free tier for up to 10GB of storage space per month
 - With Cloudflare Worker, basic auth can be applied to the uploaded files that are made public
 
-## "Private Podcasts" private url or basic auth?
-There are cases where you want to publish a podcast, but you don't want to make it public. In such cases, you can use two methods to make it private, "private url" or "basic auth".
-
-"basic auth" is more secure, but it requires additional setup. "private url" is easier to setup, but it is not as secure as "basic auth". You can create private url podcast by passing `--private-url` argument to `ytpodgen`.
-### how I configured basic auth on Cloudflare R2 using Cloudflare Workers
+## how I configured basic auth on Cloudflare R2 using Cloudflare Workers
 1. connected a custom domain to my R2 bucket, to make the bucket public. [docs](https://developers.cloudflare.com/r2/buckets/public-buckets/)
 2. configured a basic auth worker by following steps described [here](https://qiita.com/AnaKutsu/items/1c8bd0eb938edd3c0e0a).
 3. replaced the plaintext declaration of password with worker env var. [docs](https://developers.cloudflare.com/workers/platform/environment-variables/#environment-variables-via-the-dashboard)
