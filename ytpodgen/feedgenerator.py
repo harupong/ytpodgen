@@ -37,7 +37,7 @@ class FeedGenerator:
                     title=file.name,  # filename
                     media=media,
                     publication_date=datetime.datetime.fromtimestamp(
-                        file.stat().st_ctime,
+                        file.stat().st_mtime,
                         datetime.timezone.utc,
                     ),
                 )
