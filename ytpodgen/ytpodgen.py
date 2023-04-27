@@ -131,9 +131,8 @@ def run(args):
 
 
 def generate_hashed_path(title):
-    hashed_title = hashlib.sha256(title.encode("utf-8")).hexdigest()
-    path = f"{title}_{hashed_title}"
-    return path
+    hashed_path = hashlib.sha256(title.encode("utf-8")).hexdigest()
+    return hashed_path
 
 
 if __name__ == "__main__":
