@@ -3,6 +3,7 @@ import os
 import hashlib
 from importlib.metadata import version
 from pathlib import Path
+import re
 from textwrap import dedent
 
 
@@ -41,6 +42,7 @@ def parse_arguments():
     )
     parser.add_argument(
         "--liveurl",
+        type=validate_url,
         help="Watch for and download the specified YouTube Live URL."
     )
     parser.add_argument(
@@ -72,6 +74,26 @@ def parse_arguments():
 
     args = parser.parse_args()
     return args
+
+
+def validate_url(url):
+    if re.match(r"^https?://(?:www\.)?youtube\.com/watch\?v=([a-zA-Z0-9_-]{11})", url):
+        return url
+    if not url.startswith("https://www.youtube.com/"):
+        raise argparse.ArgumentTypeError(
+            f"""
+            Invalid url {url}.
+            It must be a YouTube Live URL that starts with https://www.youtube.com/.
+            """
+        )
+    if not url.endswith("/live"):
+        raise argparse.ArgumentTypeError(
+            f"""
+            Invalid url {url}.
+            It must be a YouTube Live URL that ends with /live.
+            """
+        )
+    return url
 
 
 def main():
