@@ -7,7 +7,7 @@ class Downloader:
 
     @staticmethod
     def download(title, liveurl):
-        live_from_start = True
+        live_from_start = False
         
         # See help(yt_dlp.YoutubeDL) for a list of available options
         # and public functions
