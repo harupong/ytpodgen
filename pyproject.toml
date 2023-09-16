@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ytpodgen"
-version = "0.3.0"
+version = "0.3.1"
 description = "turns YouTube live streams into podcasts"
 license = "MIT"
 authors = ["harupong <harupong@gmail.com>"]
