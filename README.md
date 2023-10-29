@@ -42,9 +42,9 @@ options:
 ```
 
 ## examples
-### wait for new livestream, and once on the air, record it and generate podcast RSS in background
+### MY USE CASE: wait for new livestream in background, and once on the air, record it, generate podcast RSS, and upload them to Cloudflare R2
 ```
-screen -dmS <TITLE> ytpodgen --liveurl <LIVEURL> --title <TITLE> --hostname <HOSTNAME>
+screen -dmS <TITLE> ytpodgen --liveurl <LIVEURL> --title <TITLE> --hostname <HOSTNAME> --upload-r2
 ```
 
 When completed, `ytpodgen` will wait for another livestream. Since all the waiting might take a while, I prefer running this in background using `screen`.
