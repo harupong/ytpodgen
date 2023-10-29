@@ -19,6 +19,7 @@ class Uploader:
             endpoint_url=Uploader.get_env_var("R2_ENDPOINT_URL"),
             aws_access_key_id=Uploader.get_env_var("R2_ACCESS_KEY_ID"),
             aws_secret_access_key=Uploader.get_env_var("R2_SECRET_ACCESS_KEY"),
+            region_name="auto"
         )
 
         filetypes = r"(.+\.mp3|index.rss)"  # regex pattern in string
